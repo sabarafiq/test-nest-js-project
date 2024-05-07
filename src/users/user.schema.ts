@@ -24,6 +24,12 @@ export class User {
   @Prop({ required: true, enum: UserRole, default: UserRole.USER })
   role: UserRole;
 
+  @Prop()
+  invitationToken: string;
+
+  @Prop()
+  tokenExpiration: Date;
+
 
   @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: 'Task'}])
   tasks: Task

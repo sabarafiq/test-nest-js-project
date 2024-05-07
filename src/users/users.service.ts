@@ -38,4 +38,35 @@ export class UsersService {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+  async inviteUser(email: string): Promise<{link: string; token: string; message: string }> {
+    const token = this.jwtService.sign(
+      { email },
+      { expiresIn: '48h' }
+    );
+
+    const expiration = new Date();
+    expiration.setHours(expiration.getHours() + 48);
+    await this.userModel.findOneAndUpdate(
+      { email },
+      {
+        email,
+        invitationToken: token,
+        tokenExpiration: expiration,
+      },
+      {
+        new: true,
+        upsert: true, 
+        setDefaultsOnInsert: true
+      }
+    );
+
+    const link = `localhost:3000/users/signup?token=${token}`;
+
+    return {
+      link,
+      token,
+      message: 'Invitation sent successfully.',
+    };
+  }
 }
