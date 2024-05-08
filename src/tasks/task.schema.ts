@@ -11,6 +11,9 @@ export enum TaskStatus {
 
 @Schema()
 export class Task {
+  static find(arg0: { user: mongoose.Types.ObjectId; }) {
+    throw new Error('Method not implemented.');
+  }
   @Prop({ required: true })
   title: string;
 

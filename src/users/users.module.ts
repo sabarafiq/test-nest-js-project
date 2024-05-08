@@ -11,7 +11,7 @@ UserSchema
   imports: [
     JwtModule.register({
       secret: 'abcd123###',
-      signOptions: { expiresIn: '300s' },
+      signOptions: { expiresIn: '200s' },
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
   ],

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './user.schema';
@@ -13,8 +13,33 @@ export class UsersService {
     @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService
   ) {}
+  
+  async validateInvitation(token: string, email: string): Promise<Boolean> {1
+  
+    try {
+      const decoded = this.jwtService.verify(token);
+      console.log(email);
+      console.log(decoded.email);
+      if (decoded.email !== email) {
+          throw new UnauthorizedException('Invalid token for the given email.');
+      }
+
+      if (new Date() > new Date(decoded.exp*1000)) {
+          throw new UnauthorizedException('Token has expired.');
+      }
+
+      return true;
+  } catch (error) {
+      console.error('Error validating token:', error);
+      return false;
+  }
+  }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
+    const valid = await this.validateInvitation(createUserDto.invitationToken, createUserDto.email);
+    if (!valid) {
+      throw new BadRequestException('Invalid or expired token.');
+    }
     const newUser = new this.userModel(createUserDto);
     return newUser.save();
   }

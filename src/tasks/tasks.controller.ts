@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'; 
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from '../users/interfaces/user.interface';
 import { GetUser } from 'src/users/decorators/user.decorator';
+import { FindTasksQueryDto } from './dto/find-tasks-query.dto';
 
 @Controller('tasks')
 @UseGuards(JwtAuthGuard)
@@ -17,8 +18,13 @@ export class TasksController {
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(@Query() query: FindTasksQueryDto, @GetUser() user: User) {
+    if (user.role === 'admin') {
+      return this.tasksService.findAllWithFilters(query, user.userId);
+    } else {
+      const tasks = this.tasksService.findAllByUser(user.userId, query);
+      return tasks
+    }
   }
 
   @Get(':id')

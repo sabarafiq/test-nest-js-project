@@ -19,5 +19,9 @@ export class CreateUserDto {
   @IsEnum(UserRole)
   @IsNotEmpty()
   role: UserRole;
+
+  @IsString()
+  @IsNotEmpty()
+  invitationToken: string;
 }
 
