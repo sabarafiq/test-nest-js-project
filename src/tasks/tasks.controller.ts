@@ -6,7 +6,9 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from '../users/interfaces/user.interface';
 import { GetUser } from 'src/users/decorators/user.decorator';
 import { FindTasksQueryDto } from './dto/find-tasks-query.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('tasks')
 @Controller('tasks')
 @UseGuards(JwtAuthGuard)
 export class TasksController {
